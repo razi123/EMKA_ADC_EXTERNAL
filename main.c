@@ -57,9 +57,9 @@ static volatile bool spi_xfer_done;  /**< Flag used to indicate that SPI instanc
 //static uint8_t       m_rx_buf[sizeof(m_tx_buf) + 1];    /**< RX buffer. */
 //static const uint8_t m_length = sizeof(m_tx_buf);        /**< Transfer length. */
 
-static uint8_t       m_tx_buf[4] = {0,0,0,0x01};           
+static uint8_t       m_tx_buf[4] = {0,0,0,0};           
 static uint8_t       m_rx_buf[]; 
-static const uint8_t m_length= sizeof(m_tx_buf); 
+static uint8_t       m_length= sizeof(m_tx_buf); 
 static uint8_t       temp[];
 
 uint8_t volatile spi_flag = 0;
@@ -149,25 +149,15 @@ int main(void)
 
 // ****************** Channel configuration ****************
 
-    m_tx_buf[0] = 0x09;                                             // communication register setup to select the channel register
+    m_tx_buf[0] = 0x09;   
+    m_tx_buf[1] = 0x80;                         // communication register setup to select the channel register
+                                                        // channel_0 enable with positive and negative input
+    m_tx_buf[2] = 0x01;
     m_rx_buf[sizeof(m_tx_buf) + 1];
     m_length = sizeof(m_tx_buf);
 
     //spi_config(&m_tx_buf, m_lenght);    
     spi_config();
-
-// configure the channel_0 in channel register 
-
-    m_tx_buf[0] = 0x80; 
-    m_tx_buf[1] = 0x01;                                             // channel_0 enable with positive and negative input
-    m_rx_buf[sizeof(m_tx_buf) + 1];
-    m_length = sizeof(m_tx_buf);
-
-   //spi_config(&m_tx_buf, m_lenght);    
-    spi_config();   
-
-
-
 
 
 
@@ -175,22 +165,17 @@ int main(void)
 
 
     m_tx_buf[0] = 0x21;                                             // communication register setup to select the filter register
+    m_tx_buf[1] = 0x01; 
+    m_tx_buf[2] = 0x00;                                             // Sinc filter, Single cycle 
+    m_tx_buf[3] = 0x00;
+    
     m_rx_buf[sizeof(m_tx_buf) + 1];
     m_length = sizeof(m_tx_buf);
 
     //spi_config(&m_tx_buf, m_lenght);    
     spi_config();                              
 
-// configure the filter0 in channel register 
 
-    m_tx_buf[0] = 0x01; 
-    m_tx_buf[1] = 0x00;                                             // Sinc filter, Single cycle 
-    m_tx_buf[2] = 0x00;
-    m_rx_buf[sizeof(m_tx_buf) + 1];
-    m_length = sizeof(m_tx_buf);
-
-    //spi_config(&m_tx_buf, m_lenght);    
-    spi_config(); 
      
   
 
@@ -198,49 +183,33 @@ int main(void)
 
 
     m_tx_buf[0] = 0x07;                                             // communication register setup to select the Error_registr
+    m_tx_buf[1] = 0x00; 
+    m_tx_buf[2] = 0x00;                                             // SPI read-write_error_enable, spi_crc_err_enable  
+    m_tx_buf[3] = 0x7E;
     m_rx_buf[sizeof(m_tx_buf) + 1];
     m_length = sizeof(m_tx_buf);
 
     //spi_config(&m_tx_buf, m_lenght);    
     spi_config();                               
 
-// configure the filter0 in channel register 
-
-    m_tx_buf[0] = 0x00; 
-    m_tx_buf[1] = 0x00;                                             // SPI read-write_error_enable, spi_crc_err_enable  
-    m_tx_buf[2] = 0x7E;
-    m_rx_buf[sizeof(m_tx_buf) + 1];
-    m_length = sizeof(m_tx_buf);
-
-   //spi_config(&m_tx_buf, m_lenght);    
-    spi_config();   
-     
  
   
   // ****************** ADC Control ****************************
 
 
     m_tx_buf[0] = 0x01;                                             // communication register setup to select ADC control register
+    m_tx_buf[1] = 0x0E; 
+    m_tx_buf[2] = 0x01;                                             // Continues read, data status, low power mode, continues conersion mode etc
     m_rx_buf[sizeof(m_tx_buf) + 1];
     m_length = sizeof(m_tx_buf);
 
     //spi_config(&m_tx_buf, m_lenght);    
     spi_config();                              
 
-// configure the filter0 in channel register 
 
-    m_tx_buf[0] = 0x0E; 
-    m_tx_buf[1] = 0x01;                                             // Continues read, data status, low power mode, continues conersion mode etc  
- 
-    m_rx_buf[sizeof(m_tx_buf) + 1];
-    m_length = sizeof(m_tx_buf);
 
-    //spi_config(&m_tx_buf, m_lenght);    
-    spi_config();
-
-    
- 
-       
+  
+      
 
     while (1)
     {
